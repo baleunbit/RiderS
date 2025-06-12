@@ -10,6 +10,7 @@ public class UIManager : MonoBehaviour
     public Text carSpeedText;
     public Text currentTimeText;
     public Text fastTimeText;
+    public Text ScoreText;
     public GameObject panel;
 
     void Awake()
@@ -62,5 +63,9 @@ public class UIManager : MonoBehaviour
     public void GameRestart()
     {
         GameManager.Instance.GameRestart();
+    }
+    public void UpdateScoreText(string text)
+    {
+        ScoreText.text = text;
     }
 }
