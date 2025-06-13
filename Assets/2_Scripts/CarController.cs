@@ -8,10 +8,10 @@ public class MyCarController : MonoBehaviour
 
     public float jumpForce = 7f;
 
-    // 점수 및 회전 체크용 변수
     private int score = 0;
     private float lastGroundedAngle = 0f;
     private float rotationAccum = 0f;
+    private float scoreTimer = 0f;
 
     private void Awake()
     {
@@ -25,7 +25,6 @@ public class MyCarController : MonoBehaviour
             onGround = true;
             surfaceEffector2D = effector;
 
-            // 착지 시 회전량 초기화
             rotationAccum = 0f;
             lastGroundedAngle = transform.eulerAngles.z;
         }
@@ -35,7 +34,6 @@ public class MyCarController : MonoBehaviour
     {
         if (surfaceEffector2D == null) return;
 
-        // W 키를 누를 때만 앞으로 이동
         if (Input.GetKey(KeyCode.W))
         {
             surfaceEffector2D.speed = 10f;
@@ -51,7 +49,6 @@ public class MyCarController : MonoBehaviour
             Jump();
         }
 
-        // 공중에서 좌/우 방향키로 차량 회전
         if (!onGround)
         {
             float rotateInput = 0f;
@@ -62,18 +59,31 @@ public class MyCarController : MonoBehaviour
 
             rb.AddTorque(rotateInput * 5f, ForceMode2D.Force);
 
-            // 회전 누적 계산
             float deltaAngle = Mathf.DeltaAngle(lastGroundedAngle, transform.eulerAngles.z);
             rotationAccum += Mathf.Abs(deltaAngle);
             lastGroundedAngle = transform.eulerAngles.z;
 
-            // 360도 회전 체크
             if (rotationAccum >= 360f)
             {
                 score += 1;
-                rotationAccum -= 360f; // 여러 바퀴 돌았을 때도 처리
-                UIManager.Instance.UpdateScoreText($"Score : {score}");
+                rotationAccum -= 360f;
+                UIManager.Instance.UpdateScoreText($"{score:00}");
             }
+        }
+
+        if (rb.linearVelocity.magnitude > 0.1f)
+        {
+            scoreTimer += Time.deltaTime;
+            if (scoreTimer >= 1f)
+            {
+                score += 1;
+                scoreTimer = 0f;
+                UIManager.Instance.UpdateScoreText($"{score:00}");
+            }
+        }
+        else
+        {
+            scoreTimer = 0f;
         }
 
         UIManager.Instance.UpdateCarSpeedText($"Car Speed : {rb.linearVelocity.magnitude:F1}");
@@ -87,7 +97,6 @@ public class MyCarController : MonoBehaviour
 
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
 
-        // 점프 시작 시 회전 체크 초기화
         lastGroundedAngle = transform.eulerAngles.z;
         rotationAccum = 0f;
     }

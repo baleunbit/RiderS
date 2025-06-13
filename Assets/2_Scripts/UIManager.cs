@@ -12,12 +12,16 @@ public class UIManager : MonoBehaviour
     public Text fastTimeText;
     public Text ScoreText;
     public GameObject panel;
+    public GameObject mainMenuPanel;
+    public GameObject gameUIPanel;
+    public GameObject gameOverPanel;
 
     void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else if (Instance != this)
         {
@@ -38,6 +42,11 @@ public class UIManager : MonoBehaviour
     public void UpdateCarSpeedText(string speed)
     {
         carSpeedText.text = speed;
+    }
+
+    public void UpdateCarSpeedText(Rigidbody rb)
+    {
+        carSpeedText.text = $"Car Speed : {rb.linearVelocity.magnitude:F1}";
     }
 
     public void UpdateCurrentTimeText(string time)
@@ -64,8 +73,35 @@ public class UIManager : MonoBehaviour
     {
         GameManager.Instance.GameRestart();
     }
+
     public void UpdateScoreText(string text)
     {
         ScoreText.text = text;
+    }
+
+    public void ShowMainMenu()
+    {
+        mainMenuPanel.SetActive(true);
+        gameUIPanel.SetActive(false);
+        gameOverPanel.SetActive(false);
+    }
+
+    public void ShowGameUI()
+    {
+        mainMenuPanel.SetActive(false);
+        gameUIPanel.SetActive(true);
+        gameOverPanel.SetActive(false);
+    }
+
+    public void ShowGameOver()
+    {
+        mainMenuPanel.SetActive(false);
+        gameUIPanel.SetActive(false);
+        gameOverPanel.SetActive(true);
+    }
+
+    public void HideGameOver()
+    {
+        gameOverPanel.SetActive(false);
     }
 }

@@ -37,13 +37,15 @@ public class GameManager : MonoBehaviour
         if (elapsedTime < fatestTime)
         {
             fatestTime = elapsedTime;
-            Debug.Log("New fastest time: " + FormatElapsedTime(fatestTime));
         }
         UIManager.Instance.UpdateCurrentTimeText("Current Time : " + FormatElapsedTime(elapsedTime));
         UIManager.Instance.UpdateFastTimeText("Fastest Time : " + FormatElapsedTime(fatestTime));
 
         //3. 패널 활성화 
         UIManager.Instance.ShowPanel();
+
+        // 게임 오버 시
+        UIManager.Instance.ShowGameOver();
     }
 
     public void GameRestart()
