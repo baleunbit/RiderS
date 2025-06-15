@@ -9,12 +9,13 @@ public class MainMenuManager : MonoBehaviour
 
     void Start()
     {
+        Time.timeScale = 1f; // 메인화면 진입 시 시간 복구
+
         startButton.onClick.AddListener(() =>
         {
             SceneManager.LoadScene("GameScene");
         });
 
-        // PlayerPrefs에서 불러오기
         int best = PlayerPrefs.GetInt("BestScore", 0);
         BestScore.text = $"Best Score : {best}";
     }

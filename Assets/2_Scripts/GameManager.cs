@@ -1,55 +1,77 @@
-using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-    
+
     private float elapsedTime = 0f;
-    private float fatestTime = float.MaxValue;
+    private float fastestTime = float.MaxValue;
 
     void Awake()
     {
         if (Instance == null)
         {
-            Instance = this;
             DontDestroyOnLoad(gameObject);
+            Instance = this;
         }
-        else if (Instance != this)
+        else
         {
             Destroy(gameObject);
         }
     }
 
+    void Start()
+    {
+        Time.timeScale = 1f; // 시작 시 항상 시간 정상화
+    }
+
     void Update()
     {
-        elapsedTime += Time.deltaTime;
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.UpdateTimeText(FormatElapsedTime(elapsedTime));
+            }
 
-        UIManager.Instance.UpdateTimeText(FormatElapsedTime(elapsedTime));
+            elapsedTime += Time.deltaTime;
+    }
+
+    public void GameRestart()
+    {
+        elapsedTime = 0f;
+        fastestTime = float.MaxValue;
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        SceneManager.LoadScene("GameScene");
     }
 
     public void GameStop()
     {
         Time.timeScale = 0f;
 
-        if (elapsedTime < fatestTime)
+        if (elapsedTime < fastestTime)
         {
-            fatestTime = elapsedTime;
+            fastestTime = elapsedTime;
         }
-        UIManager.Instance.UpdateCurrentTimeText("Current Time : " + FormatElapsedTime(elapsedTime));
-        UIManager.Instance.UpdateFastTimeText("Fastest Time : " + FormatElapsedTime(fatestTime));
 
-        // 게임 오버 패널 활성화
-        UIManager.Instance.ShowGameOverPanel();
+        UIManager.Instance?.UpdateCurrentTimeText("Current Time : " + FormatElapsedTime(elapsedTime));
+        UIManager.Instance?.UpdateFastTimeText("Fastest Time : " + FormatElapsedTime(fastestTime));
+        UIManager.Instance?.ShowGameOverPanel();
     }
 
-    public void GameRestart()
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+{
+    SceneManager.sceneLoaded -= OnSceneLoaded;
+    Time.timeScale = 1f;
+    elapsedTime = 0f;
+
+    // 여기서 UIManager 재참조 보장
+    if (UIManager.Instance != null)
     {
-        Time.timeScale = 1f;
-        UnityEngine.SceneManagement.SceneManager.LoadScene("GameScene"); // 게임 씬 이름 사용
-        elapsedTime = 0f;
         UIManager.Instance.HideGameOverPanel();
+        UIManager.Instance.UpdateCurrentTimeText("Current Time : " + FormatElapsedTime(elapsedTime));
+        UIManager.Instance.UpdateFastTimeText("Fastest Time : " + FormatElapsedTime(fastestTime));
+    }
+
     }
 
     private string FormatElapsedTime(float time)
