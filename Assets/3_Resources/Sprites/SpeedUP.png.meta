@@ -129,9 +129,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 163
-        width: 109
-        height: 173
+        y: 164
+        width: 108
+        height: 171
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -150,10 +150,10 @@ TextureImporter:
       name: "\uD654\uBA74_\uCEA1\uCC98_2025-06-15_214435-removebg-preview_1"
       rect:
         serializedVersion: 2
-        x: 96
-        y: 163
-        width: 111
-        height: 173
+        x: 97
+        y: 164
+        width: 109
+        height: 171
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -172,10 +172,10 @@ TextureImporter:
       name: "\uD654\uBA74_\uCEA1\uCC98_2025-06-15_214435-removebg-preview_2"
       rect:
         serializedVersion: 2
-        x: 194
-        y: 163
-        width: 111
-        height: 173
+        x: 195
+        y: 164
+        width: 109
+        height: 171
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -194,10 +194,10 @@ TextureImporter:
       name: "\uD654\uBA74_\uCEA1\uCC98_2025-06-15_214435-removebg-preview_3"
       rect:
         serializedVersion: 2
-        x: 292
-        y: 163
-        width: 112
-        height: 173
+        x: 293
+        y: 164
+        width: 110
+        height: 171
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -216,10 +216,10 @@ TextureImporter:
       name: "\uD654\uBA74_\uCEA1\uCC98_2025-06-15_214435-removebg-preview_4"
       rect:
         serializedVersion: 2
-        x: 391
-        y: 163
-        width: 109
-        height: 173
+        x: 392
+        y: 164
+        width: 108
+        height: 171
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -238,7 +238,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 9d938be664c318b4d92dd0eadadd20cc
     internalID: 0
     vertices: []
     indices: 

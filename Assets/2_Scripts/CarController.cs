@@ -52,6 +52,7 @@ public class CarController : MonoBehaviour
     private void CheckGround()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.1f, groundLayer);
+        Debug.Log($"isGrounded: {isGrounded}");
     }
 
     private void HandleRotationScoring()
@@ -125,6 +126,7 @@ public class CarController : MonoBehaviour
 
     private void Jump()
     {
+        Debug.Log("Jump called");
         isGrounded = false;
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
         lastGroundedAngle = transform.eulerAngles.z;
