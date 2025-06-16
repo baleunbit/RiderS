@@ -150,6 +150,10 @@ public class UIManager : MonoBehaviour
 
     public void OnQuitClicked()
     {
+        // currentTime 초기화
+        GameManager.Instance?.GameRestart();
+
+        // 메인 메뉴 씬으로 이동
         Time.timeScale = 1f;
         SceneManager.LoadScene("1_Scenes/MainMenuScene");
     }
