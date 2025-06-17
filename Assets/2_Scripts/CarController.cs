@@ -4,9 +4,10 @@ using UnityEngine.UI;
 public class RiderController : MonoBehaviour
 {
     [Header("Move Settings")]
-    public float baseSpeed = 5f;
-    public float boostSpeed = 12f;
-    public float acceleration = 2f;
+    public float baseSpeed = 10f;
+    public float boostSpeed = 30f;
+    public float acceleration = 5f;
+    public float deceleration = 5f;
 
     [Header("Jump & Rotation")]
     public float jumpForce = 7f;
@@ -15,7 +16,7 @@ public class RiderController : MonoBehaviour
     [Header("Coin & Boost")]
     public int coinCount = 0;
     public int maxCoins = 100;
-    public Text coinText; // UI �ؽ�Ʈ ���� �ʿ�
+    public Text coinText;
     public Sprite normalSprite;
     public Sprite boostSprite;
     public float boostDuration = 5f;
@@ -26,37 +27,73 @@ public class RiderController : MonoBehaviour
     private SpriteRenderer sr;
     private float currentSpeed;
     private float boostTimer = 0f;
+    private float elapsedTime = 0f;
+
+    private float scoreTimer = 0f;
+    private int score = 0;
+    private float lastZRotation = 0f;
+    private float rotationAccum = 0f;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
         currentSpeed = baseSpeed;
+        lastZRotation = transform.eulerAngles.z;
         UpdateCoinUI();
     }
 
     void Update()
     {
-        // ����
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
-        {
-            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-            isGrounded = false;
-        }
+        elapsedTime += Time.deltaTime;
+        UIManager.Instance?.UpdateTimeText(FormatElapsedTime(elapsedTime));
 
-        // �ν�Ʈ �ߵ�
-        if (Input.GetKeyDown(KeyCode.I) && coinCount >= maxCoins && !isBoosting)
-        {
-            StartBoost();
-        }
+        HandleBoostInput();
+        HandleScoreBySpeed();
+        HandleRotationScore();
+        UpdateUI();
     }
 
     void FixedUpdate()
     {
-        // �׻� �⺻ �ӵ��� ����
-        rb.linearVelocity = new Vector2(currentSpeed, rb.linearVelocity.y);
+        HandleMovement();
+        HandleAirRotation();
+        HandleBoostTimer();
+    }
 
-        // ���� ȸ�� ����
+    void HandleMovement()
+    {
+        float horizontal = 0f;
+
+        if (Input.GetKey(KeyCode.RightArrow))
+            horizontal = 1f;
+        else if (Input.GetKey(KeyCode.LeftArrow))
+            horizontal = -1f;
+
+        float targetSpeed = baseSpeed;
+
+        if (isBoosting)
+        {
+            targetSpeed = boostSpeed;
+        }
+        else
+        {
+            if (horizontal > 0)
+                targetSpeed = boostSpeed;
+            else if (horizontal < 0)
+                targetSpeed = 0f;
+            else
+                targetSpeed = baseSpeed;
+        }
+
+        currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed,
+            (targetSpeed > currentSpeed ? acceleration : deceleration) * Time.fixedDeltaTime);
+
+        rb.linearVelocity = new Vector2(currentSpeed, rb.linearVelocity.y);
+    }
+
+    void HandleAirRotation()
+    {
         if (!isGrounded)
         {
             if (Input.GetKey(KeyCode.RightArrow))
@@ -64,8 +101,18 @@ public class RiderController : MonoBehaviour
             else if (Input.GetKey(KeyCode.LeftArrow))
                 rb.AddTorque(airTorque * Time.fixedDeltaTime, ForceMode2D.Force);
         }
+    }
 
-        // �ν�Ʈ ���� �ð� üũ
+    void HandleBoostInput()
+    {
+        if (Input.GetKeyDown(KeyCode.I) && coinCount >= maxCoins && !isBoosting)
+        {
+            StartBoost();
+        }
+    }
+
+    void HandleBoostTimer()
+    {
         if (isBoosting)
         {
             boostTimer -= Time.fixedDeltaTime;
@@ -74,6 +121,56 @@ public class RiderController : MonoBehaviour
                 StopBoost();
             }
         }
+    }
+
+    void HandleScoreBySpeed()
+    {
+        if (rb.linearVelocity.magnitude > 2f)
+        {
+            scoreTimer += Time.deltaTime;
+            if (scoreTimer >= 2f)
+            {
+                AddScore(1);
+                scoreTimer = 0f;
+            }
+        }
+        else
+        {
+            scoreTimer = 0f;
+        }
+    }
+
+    void HandleRotationScore()
+    {
+        float currentZ = transform.eulerAngles.z;
+        float deltaZ = Mathf.DeltaAngle(lastZRotation, currentZ);
+        rotationAccum += Mathf.Abs(deltaZ);
+        lastZRotation = currentZ;
+
+        if (rotationAccum >= 360f)
+        {
+            AddScore(1);
+            rotationAccum = 0f;
+        }
+    }
+
+    void AddScore(int amount)
+    {
+        score += amount;
+        UIManager.Instance?.UpdateScoreText(score.ToString("00"));
+    }
+
+    void UpdateUI()
+    {
+        if (UIManager.Instance == null)
+        {
+            Debug.LogError("UIManager.Instance is NULL. UI 업데이트 실패.");
+            return;
+        }
+
+        UIManager.Instance.UpdateCarSpeedText($"Car Speed : {rb.linearVelocity.magnitude:F1}");
+        UIManager.Instance.UpdateSurfaceText($"Surface Speed : {currentSpeed:F1}");
+        UIManager.Instance.UpdateScoreText(score.ToString("00"));
     }
 
     void OnCollisionEnter2D(Collision2D col)
@@ -121,5 +218,12 @@ public class RiderController : MonoBehaviour
         isBoosting = false;
         currentSpeed = baseSpeed;
         sr.sprite = normalSprite;
+    }
+
+    private string FormatElapsedTime(float time)
+    {
+        int minutes = Mathf.FloorToInt(time / 60f);
+        int seconds = Mathf.FloorToInt(time % 60f);
+        return $"{minutes:D2}:{seconds:D2}";
     }
 }

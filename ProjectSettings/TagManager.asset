@@ -7,6 +7,9 @@ TagManager:
   - Road
   - KillZone
   - Ground
+  - Coin
+  - Obstacle
+  - Boost
   layers:
   - Default
   - TransparentFX

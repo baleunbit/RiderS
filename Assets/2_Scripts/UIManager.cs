@@ -7,14 +7,19 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance { get; private set; }
 
     public Text timeText;
-    public Text surfaceSpeedText;
+    public Text SurfaceSpeedText;
     public Text carSpeedText;
     public Text currentTimeText;
     public Text fastTimeText;
     public Text ScoreText;
+    public Text CoinText;
     public GameObject gameOverPanel;
 
-
+    public void ShowGameOver()
+    {
+        gameOverPanel.SetActive(true);
+        Time.timeScale = 0f;  // 게임 정지 (선택 사항)
+    }
 
     void Start()
     {
@@ -23,22 +28,15 @@ public class UIManager : MonoBehaviour
 
     public void ReconnectUIElements()
     {
-        if (timeText == null)
-            timeText = GameObject.Find("TimeText")?.GetComponent<Text>();
-        if (surfaceSpeedText == null)
-            surfaceSpeedText = GameObject.Find("SurfaceSpeedText")?.GetComponent<Text>();
         if (carSpeedText == null)
             carSpeedText = GameObject.Find("CarSpeedText")?.GetComponent<Text>();
-        if (currentTimeText == null)
-            currentTimeText = GameObject.Find("CurrentTimeText")?.GetComponent<Text>();
-        if (fastTimeText == null)
-            fastTimeText = GameObject.Find("FastestTimeText")?.GetComponent<Text>();
+        if (SurfaceSpeedText == null)
+            SurfaceSpeedText = GameObject.Find("SurfaceSpeedText")?.GetComponent<Text>();
         if (ScoreText == null)
             ScoreText = GameObject.Find("ScoreText")?.GetComponent<Text>();
-        if (gameOverPanel == null)
-            gameOverPanel = GameObject.Find("GameOverPanel");
-    }
 
+        Debug.Log($"CarSpeedText: {carSpeedText != null}, SurfaceSpeedText: {SurfaceSpeedText != null}, ScoreText: {ScoreText != null}");
+    }
 
     void Awake()
     {
@@ -54,7 +52,7 @@ public class UIManager : MonoBehaviour
 
         // 모든 Text 컴포넌트에 대해 Find 및 로그
         TryAssignIfNull(ref timeText, "TimeText");
-        TryAssignIfNull(ref surfaceSpeedText, "SurfaceSpeedText");
+        TryAssignIfNull(ref SurfaceSpeedText, "SurfaceSpeedText");
         TryAssignIfNull(ref carSpeedText, "CarSpeedText");
         TryAssignIfNull(ref currentTimeText, "CurrentTimeText");
         TryAssignIfNull(ref fastTimeText, "FastTimeText");
@@ -109,13 +107,21 @@ public class UIManager : MonoBehaviour
 
     public void UpdateSurfaceText(string surface)
     {
-        if (surfaceSpeedText == null) { LogNull("surfaceSpeedText"); return; }
-        surfaceSpeedText.text = surface;
+        if (SurfaceSpeedText == null)
+        {
+            Debug.LogError("SurfaceSpeedText is NULL. 연결 확인 필요.");
+            return;
+        }
+        SurfaceSpeedText.text = surface;
     }
 
     public void UpdateCarSpeedText(string speed)
     {
-        if (carSpeedText == null) { LogNull("carSpeedText"); return; }
+        if (carSpeedText == null)
+        {
+            Debug.LogError("CarSpeedText is NULL. 연결 확인 필요.");
+            return;
+        }
         carSpeedText.text = speed;
     }
 
@@ -133,7 +139,11 @@ public class UIManager : MonoBehaviour
 
     public void UpdateScoreText(string text)
     {
-        if (ScoreText == null) { LogNull("ScoreText"); return; }
+        if (ScoreText == null)
+        {
+            Debug.LogError("ScoreText is NULL. 연결 확인 필요.");
+            return;
+        }
         ScoreText.text = text;
     }
 

@@ -12,7 +12,7 @@ public class Coin : MonoBehaviour
     }
 
     // 트리거에 들어왔을 때 호출되는 메서드
-    private void OnTriggerEnter2D(Collider2D other)
+    public void OnTriggerEnter2D(Collider2D other)
     {
         coinParticle.Play();
         audioSource.Play();

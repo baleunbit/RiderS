@@ -3,28 +3,28 @@ using UnityEngine.SceneManagement;
 
 public class FinishLine : MonoBehaviour
 {
-    [SerializeField] private float reloadDelay = 1;
-    [SerializeField] private ParticleSystem finishEffect; // 인스펙터에서 반드시 할당
+    [SerializeField] private float delayToMainMenu = 2f; // 메인 메뉴로 전환 전 딜레이
+    [SerializeField] private ParticleSystem finishEffect; // 파티클 이펙트 (인스펙터에서 연결)
 
-    void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
-            finishEffect.Play(); // null 체크 없이 바로 실행
+            if (finishEffect != null)
+            {
+                finishEffect.Play(); // 도착 시 이펙트 재생
+            }
 
-            // currentTime 초기화
-            GameManager.Instance?.GameRestart();
+            Time.timeScale = 0f; // 게임 일시정지
+            UIManager.Instance?.ShowGameOverPanel(); // 게임 오버 패널 즉시 표시
 
-            // 메인 메뉴 패널 호출
-            UIManager.Instance?.ShowGameOverPanel();
-
-            // 일정 시간 후 씬 재로드
-            Invoke(nameof(ReloadScene), reloadDelay);
+            Invoke(nameof(GoToMainMenu), delayToMainMenu); // 2초 후 메인 메뉴 이동
         }
     }
 
-    void ReloadScene()
+    private void GoToMainMenu()
     {
-        SceneManager.LoadScene(0);
+        Time.timeScale = 1f; // 시간 다시 정상화
+        SceneManager.LoadScene("1_Scenes/MainMenuScene"); // 메인 메뉴 씬 로드
     }
 }

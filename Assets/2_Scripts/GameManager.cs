@@ -12,8 +12,7 @@ public class GameManager : MonoBehaviour
     {
         if (Instance == null)
         {
-            DontDestroyOnLoad(gameObject);
-            Instance = this;
+            Instance = this;    
         }
         else
         {
@@ -28,12 +27,14 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-            if (UIManager.Instance != null)
-            {
-                UIManager.Instance.UpdateTimeText(FormatElapsedTime(elapsedTime));
-            }
+        if (UIManager.Instance == null)
+        {
+            Debug.LogError("UIManager.Instance is NULL. UI 업데이트 실패.");
+            return;
+        }
 
-            elapsedTime += Time.deltaTime;
+        UIManager.Instance.UpdateTimeText(FormatElapsedTime(elapsedTime));
+        elapsedTime += Time.deltaTime;
     }
 
     public void GameRestart()
@@ -59,19 +60,18 @@ public class GameManager : MonoBehaviour
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-{
-    SceneManager.sceneLoaded -= OnSceneLoaded;
-    Time.timeScale = 1f;
-    elapsedTime = 0f;
-
-    // 여기서 UIManager 재참조 보장
-    if (UIManager.Instance != null)
     {
-        UIManager.Instance.HideGameOverPanel();
-        UIManager.Instance.UpdateCurrentTimeText("Current Time : " + FormatElapsedTime(elapsedTime));
-        UIManager.Instance.UpdateFastTimeText("Fastest Time : " + FormatElapsedTime(fastestTime));
-    }
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        Time.timeScale = 1f;
+        elapsedTime = 0f;
 
+        // 여기서 UIManager 재참조 보장
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.HideGameOverPanel();
+            UIManager.Instance.UpdateCurrentTimeText("Current Time : " + FormatElapsedTime(elapsedTime));
+            UIManager.Instance.UpdateFastTimeText("Fastest Time : " + FormatElapsedTime(fastestTime));
+        }
     }
 
     private string FormatElapsedTime(float time)
