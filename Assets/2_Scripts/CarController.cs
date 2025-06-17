@@ -1,143 +1,125 @@
 using UnityEngine;
+using UnityEngine.UI;
 
-public class CarController : MonoBehaviour
+public class RiderController : MonoBehaviour
 {
+    [Header("Move Settings")]
+    public float baseSpeed = 5f;
+    public float boostSpeed = 12f;
+    public float acceleration = 2f;
+
+    [Header("Jump & Rotation")]
+    public float jumpForce = 7f;
+    public float airTorque = 200f;
+
+    [Header("Coin & Boost")]
+    public int coinCount = 0;
+    public int maxCoins = 100;
+    public Text coinText; // UI �ؽ�Ʈ ���� �ʿ�
+    public Sprite normalSprite;
+    public Sprite boostSprite;
+    public float boostDuration = 5f;
+
+    private bool isGrounded = true;
+    private bool isBoosting = false;
     private Rigidbody2D rb;
-    private SurfaceEffector2D surfaceEffector2D;
+    private SpriteRenderer sr;
+    private float currentSpeed;
+    private float boostTimer = 0f;
 
-    public float jumpForce = 5f;
-    public Transform groundCheck;
-    public LayerMask groundLayer;
-
-    private bool isGrounded = false;
-    private float lastGroundedAngle = 0f;
-    private float rotationAccum = 0f;
-    private float scoreTimer = 0f;
-
-    public int BestScore = 0;
-    public int score = 0;
-
-    void Awake()
+    void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        sr = GetComponent<SpriteRenderer>();
+        currentSpeed = baseSpeed;
+        UpdateCoinUI();
     }
-    void FixedUpdate()
-    {
-        LimitAngularVelocity();
-    }
-    public float maxAngularVelocity = 100f; // 최고 회전 가속도 제한
-    private void LimitAngularVelocity()
-    {
-        if (rb == null) return;
-        rb.angularVelocity = Mathf.Clamp(rb.angularVelocity, -maxAngularVelocity, maxAngularVelocity);
-    }
-
 
     void Update()
     {
-        CheckGround();
-
+        // ����
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
-            Jump();
+            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            isGrounded = false;
         }
 
-        HandleRotationScoring();
-        HandleSpeedScoring();
-
-        UpdateUI();
-        CheckGameOverCondition();
+        // �ν�Ʈ �ߵ�
+        if (Input.GetKeyDown(KeyCode.I) && coinCount >= maxCoins && !isBoosting)
+        {
+            StartBoost();
+        }
     }
 
-    private void CheckGround()
+    void FixedUpdate()
     {
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.1f, groundLayer);
-        Debug.Log($"isGrounded: {isGrounded}");
-    }
+        // �׻� �⺻ �ӵ��� ����
+        rb.linearVelocity = new Vector2(currentSpeed, rb.linearVelocity.y);
 
-    private void HandleRotationScoring()
-    {
+        // ���� ȸ�� ����
         if (!isGrounded)
         {
-            float rotateInput = Input.GetKey(KeyCode.LeftArrow) ? 1f :
-                                Input.GetKey(KeyCode.RightArrow) ? -1f : 0f;
-            rb.AddTorque(rotateInput * 3f, ForceMode2D.Impulse);
+            if (Input.GetKey(KeyCode.RightArrow))
+                rb.AddTorque(-airTorque * Time.fixedDeltaTime, ForceMode2D.Force);
+            else if (Input.GetKey(KeyCode.LeftArrow))
+                rb.AddTorque(airTorque * Time.fixedDeltaTime, ForceMode2D.Force);
+        }
 
-            float deltaAngle = Mathf.DeltaAngle(lastGroundedAngle, transform.eulerAngles.z);
-            rotationAccum += Mathf.Abs(deltaAngle);
-            lastGroundedAngle = transform.eulerAngles.z;
-
-            if (rotationAccum >= 360f)
+        // �ν�Ʈ ���� �ð� üũ
+        if (isBoosting)
+        {
+            boostTimer -= Time.fixedDeltaTime;
+            if (boostTimer <= 0f)
             {
-                score += 1;
-                rotationAccum -= 360f;
-                UIManager.Instance?.UpdateScoreText($"{score:00}");
+                StopBoost();
             }
         }
     }
 
-    private void HandleSpeedScoring()
+    void OnCollisionEnter2D(Collision2D col)
     {
-        if (rb.linearVelocity.magnitude > 0.1f)
-        {
-            scoreTimer += Time.deltaTime;
-            if (scoreTimer >= 1f)
-            {
-                score += 1;
-                scoreTimer = 0f;
-                UIManager.Instance?.UpdateScoreText($"{score:00}");
-            }
-        }
-        else
-        {
-            scoreTimer = 0f;
-        }
+        if (col.collider.CompareTag("Ground"))
+            isGrounded = true;
+    }
 
-        if (score > BestScore)
+    void OnCollisionExit2D(Collision2D col)
+    {
+        if (col.collider.CompareTag("Ground"))
+            isGrounded = false;
+    }
+
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        if (col.CompareTag("Coin") && coinCount < maxCoins)
         {
-            BestScore = score;
-            PlayerPrefs.SetInt("BestScore", BestScore);
-            PlayerPrefs.Save();
+            coinCount++;
+            UpdateCoinUI();
+            Destroy(col.gameObject);
         }
     }
 
-    private void UpdateUI()
+    void UpdateCoinUI()
     {
-        UIManager.Instance?.UpdateCarSpeedText($"Car Speed : {rb.linearVelocity.magnitude:F1}");
-
-        if (surfaceEffector2D != null)
+        if (coinText != null)
         {
-            surfaceEffector2D.speed = Input.GetKey(KeyCode.W) ? 10f : 0f;
-            UIManager.Instance?.UpdateSurfaceText($"Surface Speed : {surfaceEffector2D.speed:F1}");
+            coinText.text = coinCount.ToString() + " / " + maxCoins.ToString();
         }
     }
 
-    private void CheckGameOverCondition()
+    void StartBoost()
     {
-        if (isGrounded)
-        {
-            float angleZ = Mathf.Abs(transform.eulerAngles.z);
-            if (angleZ > 90f && angleZ < 270f)
-            {
-                GameManager.Instance.GameStop();
-            }
-        }
+        isBoosting = true;
+        coinCount = 0;
+        UpdateCoinUI();
+        sr.sprite = boostSprite;
+        currentSpeed = boostSpeed;
+        boostTimer = boostDuration;
     }
 
-    private void Jump()
+    void StopBoost()
     {
-        Debug.Log("Jump called");
-        isGrounded = false;
-        rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-        lastGroundedAngle = transform.eulerAngles.z;
-        rotationAccum = 0f;
-    }
-
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.TryGetComponent<SurfaceEffector2D>(out var effector))
-        {
-            surfaceEffector2D = effector;
-        }
+        isBoosting = false;
+        currentSpeed = baseSpeed;
+        sr.sprite = normalSprite;
     }
 }

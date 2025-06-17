@@ -378,11 +378,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4384393149373745877, guid: 593c56214d105ce44b6761d5f3e0e2e6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 25.8
+      value: 43.9
       objectReference: {fileID: 0}
     - target: {fileID: 4384393149373745877, guid: 593c56214d105ce44b6761d5f3e0e2e6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -231.08
+      value: -229.47
       objectReference: {fileID: 0}
     - target: {fileID: 4384393149373745877, guid: 593c56214d105ce44b6761d5f3e0e2e6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -700,7 +700,7 @@ Transform:
   m_GameObject: {fileID: 461294458}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.13, y: -1.69, z: -2.2726896}
+  m_LocalPosition: {x: 1.72, y: -1.4, z: -2.2726896}
   m_LocalScale: {x: 1.9987314, y: 1.9987314, z: 1.9987314}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -911,11 +911,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4384393149373745877, guid: 593c56214d105ce44b6761d5f3e0e2e6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 22
+      value: 45.49
       objectReference: {fileID: 0}
     - target: {fileID: 4384393149373745877, guid: 593c56214d105ce44b6761d5f3e0e2e6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -233
+      value: -230.41
       objectReference: {fileID: 0}
     - target: {fileID: 4384393149373745877, guid: 593c56214d105ce44b6761d5f3e0e2e6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1309,11 +1309,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4384393149373745877, guid: 593c56214d105ce44b6761d5f3e0e2e6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 24.569998
+      value: 146.53
       objectReference: {fileID: 0}
     - target: {fileID: 4384393149373745877, guid: 593c56214d105ce44b6761d5f3e0e2e6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -232.56
+      value: -234.09
       objectReference: {fileID: 0}
     - target: {fileID: 4384393149373745877, guid: 593c56214d105ce44b6761d5f3e0e2e6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1451,11 +1451,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4384393149373745877, guid: 593c56214d105ce44b6761d5f3e0e2e6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 23.169996
+      value: 47.19
       objectReference: {fileID: 0}
     - target: {fileID: 4384393149373745877, guid: 593c56214d105ce44b6761d5f3e0e2e6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -232.72
+      value: -231.32
       objectReference: {fileID: 0}
     - target: {fileID: 4384393149373745877, guid: 593c56214d105ce44b6761d5f3e0e2e6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2109,7 +2109,7 @@ GameObject:
   - component: {fileID: 1083585427}
   - component: {fileID: 1083585426}
   - component: {fileID: 1083585431}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Ground
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -2128,9 +2128,9 @@ SurfaceEffector2D:
   m_ColliderMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_Speed: 1
+  m_Speed: 15
   m_SpeedVariation: 0
-  m_ForceScale: 1
+  m_ForceScale: 0.1
   m_UseContactForce: 0
   m_UseFriction: 1
   m_UseBounce: 1
@@ -3666,7 +3666,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 6407f8e0fd9af4046be92b4b67eea7a0, type: 3}
   m_Resource: {fileID: 8300000, guid: 6407f8e0fd9af4046be92b4b67eea7a0, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 1
@@ -3971,14 +3971,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17769ba37895acc4d9967a7d79be0c4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpForce: 5
   groundCheck: {fileID: 461294459}
   groundLayer:
     serializedVersion: 2
-    m_Bits: 0
-  BestScore: 0
-  score: 0
-  maxAngularVelocity: 100
+    m_Bits: 8
+  defaultSpeed: 15
+  acceleration: 2
+  deceleration: 2
+  maxSpeed: 20
+  jumpForce: 5
+  airTorque: 100
+  surfaceEffector2D: {fileID: 0}
 --- !u!1 &1449758933
 GameObject:
   m_ObjectHideFlags: 0
@@ -4377,7 +4380,7 @@ GameObject:
   - component: {fileID: 1520278824}
   - component: {fileID: 1520278823}
   - component: {fileID: 1520278822}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Ground (1)
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -4408,9 +4411,9 @@ SurfaceEffector2D:
   m_ColliderMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_Speed: 1
+  m_Speed: 15
   m_SpeedVariation: 0
-  m_ForceScale: 1
+  m_ForceScale: 0.1
   m_UseContactForce: 0
   m_UseFriction: 1
   m_UseBounce: 1
@@ -10395,11 +10398,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4384393149373745877, guid: 593c56214d105ce44b6761d5f3e0e2e6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 20.819996
+      value: 148
       objectReference: {fileID: 0}
     - target: {fileID: 4384393149373745877, guid: 593c56214d105ce44b6761d5f3e0e2e6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -233.15001
+      value: -233.51
       objectReference: {fileID: 0}
     - target: {fileID: 4384393149373745877, guid: 593c56214d105ce44b6761d5f3e0e2e6, type: 3}
       propertyPath: m_LocalPosition.z

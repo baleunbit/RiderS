@@ -14,6 +14,8 @@ public class UIManager : MonoBehaviour
     public Text ScoreText;
     public GameObject gameOverPanel;
 
+
+
     void Start()
     {
         ReconnectUIElements();
