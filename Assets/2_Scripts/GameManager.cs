@@ -55,6 +55,15 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.Save();
         }
 
+        // Best Score 업데이트
+        int bestScore = PlayerPrefs.GetInt("BestScore", 0);
+        if (score > bestScore) // 가장 높은 점수 저장
+        {
+            PlayerPrefs.SetInt("BestScore", score);
+            PlayerPrefs.Save();
+            Debug.Log($"[GameManager] Best Score 업데이트: {score}");
+        }
+
         // UI 업데이트
         UIManager.Instance?.UpdateCurrentTimeText($"Current Time : {FormatElapsedTime(elapsedTime)}");
         UIManager.Instance?.UpdateFastTimeText($"Fastest Time : {FormatElapsedTime(PlayerPrefs.GetFloat("FastestTime", float.MaxValue))}");

@@ -190,7 +190,7 @@ public class RiderController : MonoBehaviour
         if (col.collider.CompareTag("Obstacle")) // Obstacle 태그 처리
         {
             SaveFastestTime(); // Fastest Time 저장
-            UIManager.Instance?.ShowGameOverPanel(); // 게임 오버 패널 활성화
+            GameManager.Instance?.GameStop(score); // 점수를 전달하여 게임 종료
         }
     }
 
@@ -257,5 +257,10 @@ public class RiderController : MonoBehaviour
         int minutes = Mathf.FloorToInt(time / 60f);
         int seconds = Mathf.FloorToInt(time % 60f);
         return $"{minutes:D2}:{seconds:D2}";
+    }
+
+    public int GetScore()
+    {
+        return score;
     }
 }
