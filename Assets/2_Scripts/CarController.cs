@@ -240,11 +240,16 @@ public class RiderController : MonoBehaviour
         float currentTime = elapsedTime;
         float fastestTime = PlayerPrefs.GetFloat("FastestTime", float.MaxValue);
 
-        if (currentTime < fastestTime)
+        // Fastest Time 업데이트
+        if (currentTime > fastestTime) // 가장 오래 플레이한 시간 저장
         {
             PlayerPrefs.SetFloat("FastestTime", currentTime);
             PlayerPrefs.Save();
         }
+
+        // UI 업데이트
+        UIManager.Instance?.UpdateCurrentTimeText($"Current Time : {FormatElapsedTime(currentTime)}");
+        UIManager.Instance?.UpdateFastTimeText($"Fastest Time : {FormatElapsedTime(PlayerPrefs.GetFloat("FastestTime", float.MaxValue))}");
     }
 
     private string FormatElapsedTime(float time)

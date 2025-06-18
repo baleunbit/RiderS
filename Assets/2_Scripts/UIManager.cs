@@ -152,11 +152,19 @@ public class UIManager : MonoBehaviour
         if (gameOverPanel == null) { LogNull("gameOverPanel"); return; }
         gameOverPanel.SetActive(true);
 
+        // Fastest Time 업데이트
         float fastestTime = PlayerPrefs.GetFloat("FastestTime", float.MaxValue);
         if (fastestTime != float.MaxValue)
         {
             UpdateFastTimeText($"Fastest Time : {FormatElapsedTime(fastestTime)}");
         }
+
+        // Best Score 업데이트
+        int bestScore = PlayerPrefs.GetInt("BestScore", 0);
+        UpdateScoreText($"Best Score : {bestScore}");
+
+        // Current Time 업데이트
+        UpdateCurrentTimeText($"Current Time : {FormatElapsedTime(Time.timeSinceLevelLoad)}");
 
         Time.timeScale = 0f;
     }

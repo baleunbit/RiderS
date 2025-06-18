@@ -6,7 +6,6 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     private float elapsedTime = 0f;
-    private float fastestTime = float.MaxValue;
 
     void Awake()
     {
@@ -40,22 +39,26 @@ public class GameManager : MonoBehaviour
     public void GameRestart()
     {
         elapsedTime = 0f;
-        fastestTime = float.MaxValue;
         SceneManager.sceneLoaded += OnSceneLoaded;
         SceneManager.LoadScene("GameScene");
     }
 
-    public void GameStop()
+    public void GameStop(int score)
     {
         Time.timeScale = 0f;
 
-        if (elapsedTime < fastestTime)
+        // Fastest Time 업데이트
+        float fastestTime = PlayerPrefs.GetFloat("FastestTime", float.MaxValue);
+        if (elapsedTime > fastestTime) // 가장 오래 플레이한 시간 저장
         {
-            fastestTime = elapsedTime;
+            PlayerPrefs.SetFloat("FastestTime", elapsedTime);
+            PlayerPrefs.Save();
         }
 
-        UIManager.Instance?.UpdateCurrentTimeText("Current Time : " + FormatElapsedTime(elapsedTime));
-        UIManager.Instance?.UpdateFastTimeText("Fastest Time : " + FormatElapsedTime(fastestTime));
+        // UI 업데이트
+        UIManager.Instance?.UpdateCurrentTimeText($"Current Time : {FormatElapsedTime(elapsedTime)}");
+        UIManager.Instance?.UpdateFastTimeText($"Fastest Time : {FormatElapsedTime(PlayerPrefs.GetFloat("FastestTime", float.MaxValue))}");
+        UIManager.Instance?.UpdateScoreText($"Best Score : {PlayerPrefs.GetInt("BestScore", 0)}");
         UIManager.Instance?.ShowGameOverPanel();
     }
 
@@ -65,12 +68,12 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         elapsedTime = 0f;
 
-        // 여기서 UIManager 재참조 보장
+        // UI 초기화
         if (UIManager.Instance != null)
         {
             UIManager.Instance.HideGameOverPanel();
-            UIManager.Instance.UpdateCurrentTimeText("Current Time : " + FormatElapsedTime(elapsedTime));
-            UIManager.Instance.UpdateFastTimeText("Fastest Time : " + FormatElapsedTime(fastestTime));
+            UIManager.Instance.UpdateCurrentTimeText($"Current Time : {FormatElapsedTime(elapsedTime)}");
+            UIManager.Instance.UpdateFastTimeText($"Fastest Time : {FormatElapsedTime(PlayerPrefs.GetFloat("FastestTime", 0f))}");
         }
     }
 
