@@ -51,6 +51,7 @@ public class RiderController : MonoBehaviour
         HandleBoostInput();
         HandleScoreBySpeed();
         HandleRotationScore();
+        HandleJumpInput(); // 점프 입력 처리 추가
         UpdateUI();
     }
 
@@ -154,6 +155,14 @@ public class RiderController : MonoBehaviour
         }
     }
 
+    void HandleJumpInput()
+    {
+        if (isGrounded && Input.GetKeyDown(KeyCode.Space)) // Space 키로 점프
+        {
+            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse); // 점프 힘 추가
+        }
+    }
+
     void AddScore(int amount)
     {
         score += amount;
@@ -177,6 +186,12 @@ public class RiderController : MonoBehaviour
     {
         if (col.collider.CompareTag("Ground"))
             isGrounded = true;
+
+        if (col.collider.CompareTag("Obstacle")) // Obstacle 태그 처리
+        {
+            SaveFastestTime(); // Fastest Time 저장
+            UIManager.Instance?.ShowGameOverPanel(); // 게임 오버 패널 활성화
+        }
     }
 
     void OnCollisionExit2D(Collision2D col)
@@ -189,7 +204,7 @@ public class RiderController : MonoBehaviour
     {
         if (col.CompareTag("Coin") && coinCount < maxCoins)
         {
-            coinCount++;
+            coinCount += 10; // 코인 하나를 먹으면 10개 증가
             UpdateCoinUI();
             Destroy(col.gameObject);
         }
@@ -218,6 +233,18 @@ public class RiderController : MonoBehaviour
         isBoosting = false;
         currentSpeed = baseSpeed;
         sr.sprite = normalSprite;
+    }
+
+    void SaveFastestTime()
+    {
+        float currentTime = elapsedTime;
+        float fastestTime = PlayerPrefs.GetFloat("FastestTime", float.MaxValue);
+
+        if (currentTime < fastestTime)
+        {
+            PlayerPrefs.SetFloat("FastestTime", currentTime);
+            PlayerPrefs.Save();
+        }
     }
 
     private string FormatElapsedTime(float time)

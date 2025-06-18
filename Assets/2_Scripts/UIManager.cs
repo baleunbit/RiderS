@@ -151,7 +151,21 @@ public class UIManager : MonoBehaviour
     {
         if (gameOverPanel == null) { LogNull("gameOverPanel"); return; }
         gameOverPanel.SetActive(true);
+
+        float fastestTime = PlayerPrefs.GetFloat("FastestTime", float.MaxValue);
+        if (fastestTime != float.MaxValue)
+        {
+            UpdateFastTimeText($"Fastest Time : {FormatElapsedTime(fastestTime)}");
+        }
+
         Time.timeScale = 0f;
+    }
+
+    private string FormatElapsedTime(float time)
+    {
+        int minutes = Mathf.FloorToInt(time / 60f);
+        int seconds = Mathf.FloorToInt(time % 60f);
+        return $"{minutes:D2}:{seconds:D2}";
     }
 
     public void HideGameOverPanel()

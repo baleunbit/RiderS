@@ -9,7 +9,7 @@ public class MainMenuManager : MonoBehaviour
 
     void Start()
     {
-        Time.timeScale = 1f; // 메인화면 진입 시 시간 복구
+        Time.timeScale = 1f;
 
         startButton.onClick.AddListener(() =>
         {
@@ -18,5 +18,18 @@ public class MainMenuManager : MonoBehaviour
 
         int best = PlayerPrefs.GetInt("BestScore", 0);
         BestScore.text = $"Best Score : {best}";
+
+        float fastestTime = PlayerPrefs.GetFloat("FastestTime", float.MaxValue);
+        if (fastestTime != float.MaxValue)
+        {
+            BestScore.text += $"\nFastest Time : {FormatElapsedTime(fastestTime)}";
+        }
+    }
+
+    private string FormatElapsedTime(float time)
+    {
+        int minutes = Mathf.FloorToInt(time / 60f);
+        int seconds = Mathf.FloorToInt(time % 60f);
+        return $"{minutes:D2}:{seconds:D2}";
     }
 }
