@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RiderController : MonoBehaviour
+public class CarController : MonoBehaviour
 {
     [Header("Move Settings")]
     public float baseSpeed = 10f;

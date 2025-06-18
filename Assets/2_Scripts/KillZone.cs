@@ -5,7 +5,7 @@ public class KillZone : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         // 충돌한 객체에서 RiderController를 가져옴
-        RiderController rider = collision.GetComponent<RiderController>();
+        CarController rider = collision.GetComponent<CarController>();
         if (rider != null)
         {
             int score = rider.GetScore(); // RiderController에서 점수를 가져옴
