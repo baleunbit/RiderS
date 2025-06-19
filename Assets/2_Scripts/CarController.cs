@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,13 +6,13 @@ public class CarController : MonoBehaviour
 {
     [Header("Move Settings")]
     public float baseSpeed = 10f;
-    public float boostSpeed = 30f;
+    public float boostSpeed = 50f;
     public float acceleration = 5f;
     public float deceleration = 5f;
 
     [Header("Jump & Rotation")]
     public float jumpForce = 7f;
-    public float airTorque = 200f;
+    public float airTorque = 300f;
 
     [Header("Coin & Boost")]
     public int coinCount = 0;
@@ -19,7 +20,7 @@ public class CarController : MonoBehaviour
     public Text coinText;
     public Sprite normalSprite;
     public Sprite boostSprite;
-    public float boostDuration = 5f;
+    public float boostDuration = 2f; // 부스트 지속 시간
 
     [Header("Crash Effect")]
     public GameObject crashEffectPrefab; // CrashEffect 프리팹 참조
@@ -27,7 +28,7 @@ public class CarController : MonoBehaviour
 
     [Header("Acceleration Sound")]
     [SerializeField] private AudioSource accelerationSound; // 가속 사운드 AudioSource
-    [SerializeField] private float minPitch = 0.8f; // 최소 Pitch 값
+    [SerializeField] private float minPitch = 1f; // 최소 Pitch 값
     [SerializeField] private float maxPitch = 2.0f; // 최대 Pitch 값
 
     private bool isGrounded = true;
@@ -249,6 +250,12 @@ public class CarController : MonoBehaviour
             coinCount += 10; // 코인 하나를 먹으면 10개 증가
             UpdateCoinUI();
         }
+
+        if (col.CompareTag("Boost")) // Boost 태그 처리
+        {
+            StartBoost(); // Boost 효과 시작
+            Invoke(nameof(StopBoost), boostDuration); // 부스트 지속 시간 후 종료
+        }
     }
 
     void UpdateCoinUI()
@@ -262,11 +269,8 @@ public class CarController : MonoBehaviour
     void StartBoost()
     {
         isBoosting = true;
-        coinCount = 0;
-        UpdateCoinUI();
-        sr.sprite = boostSprite;
-        currentSpeed = boostSpeed;
-        boostTimer = boostDuration;
+        sr.sprite = boostSprite; // Boost 스프라이트로 변경
+        currentSpeed = boostSpeed; // Boost 속도로 변경
     }
 
     void StopBoost()
@@ -300,5 +304,10 @@ public class CarController : MonoBehaviour
     public int GetScore()
     {
         return score;
+    }
+
+    internal void StartBoost(float boostSpeed, float boostDuration, Sprite boostSprite)
+    {
+        throw new NotImplementedException();
     }
 }
