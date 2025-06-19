@@ -5060,3 +5060,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b8b0f58e9616f245af357bbc2cb52ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioSource: {fileID: 3183698975292897141}
+  coinSound: {fileID: 8300000, guid: 2066c40f8c057ea41a97b27b7e7cc7f7, type: 3}

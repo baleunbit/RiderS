@@ -3,8 +3,8 @@ using UnityEngine.SceneManagement;
 
 public class FinishLine : MonoBehaviour
 {
-    [SerializeField] private float delayToMainMenu = 2f; // 메인 메뉴로 전환 전 딜레이
-    [SerializeField] private ParticleSystem finishEffect; // 파티클 이펙트 (인스펙터에서 연결)
+    [SerializeField] private float reloadDelay = 1f; // 씬 재로드 딜레이
+    [SerializeField] private ParticleSystem finishEffect; // 인스펙터에서 반드시 할당
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -15,16 +15,12 @@ public class FinishLine : MonoBehaviour
                 finishEffect.Play(); // 도착 시 이펙트 재생
             }
 
-            Time.timeScale = 0f; // 게임 일시정지
-            UIManager.Instance?.ShowGameOverPanel(); // 게임 오버 패널 즉시 표시
-
-            Invoke(nameof(GoToMainMenu), delayToMainMenu); // 2초 후 메인 메뉴 이동
+            Invoke(nameof(ReloadScene), reloadDelay); // 딜레이 후 씬 재로드
         }
     }
 
-    private void GoToMainMenu()
+    private void ReloadScene()
     {
-        Time.timeScale = 1f; // 시간 다시 정상화
-        SceneManager.LoadScene("1_Scenes/MainMenuScene"); // 메인 메뉴 씬 로드
+        SceneManager.LoadScene(0); // 씬 인덱스 0으로 재로드
     }
 }

@@ -25,6 +25,11 @@ public class CarController : MonoBehaviour
     public GameObject crashEffectPrefab; // CrashEffect 프리팹 참조
     private GameObject crashEffectInstance;
 
+    [Header("Acceleration Sound")]
+    [SerializeField] private AudioSource accelerationSound; // 가속 사운드 AudioSource
+    [SerializeField] private float minPitch = 0.8f; // 최소 Pitch 값
+    [SerializeField] private float maxPitch = 2.0f; // 최대 Pitch 값
+
     private bool isGrounded = true;
     private bool isBoosting = false;
     private Rigidbody2D rb;
@@ -45,6 +50,12 @@ public class CarController : MonoBehaviour
         currentSpeed = baseSpeed;
         lastZRotation = transform.eulerAngles.z;
         UpdateCoinUI();
+
+        if (accelerationSound != null)
+        {
+            accelerationSound.loop = true; // 가속 사운드 반복 재생
+            accelerationSound.Play(); // 사운드 시작
+        }
     }
 
     void Update()
@@ -57,6 +68,8 @@ public class CarController : MonoBehaviour
         HandleRotationScore();
         HandleJumpInput(); // 점프 입력 처리 추가
         UpdateUI();
+
+        UpdateAccelerationSound(); // 가속 사운드 업데이트
     }
 
     void FixedUpdate()
@@ -95,6 +108,16 @@ public class CarController : MonoBehaviour
             (targetSpeed > currentSpeed ? acceleration : deceleration) * Time.fixedDeltaTime);
 
         rb.linearVelocity = new Vector2(currentSpeed, rb.linearVelocity.y);
+    }
+
+    void UpdateAccelerationSound()
+    {
+        if (accelerationSound != null && isGrounded)
+        {
+            // 속도에 따라 Pitch 조정
+            float normalizedSpeed = Mathf.InverseLerp(baseSpeed, boostSpeed, currentSpeed);
+            accelerationSound.pitch = Mathf.Lerp(minPitch, maxPitch, normalizedSpeed);
+        }
     }
 
     void HandleAirRotation()
@@ -225,7 +248,6 @@ public class CarController : MonoBehaviour
         {
             coinCount += 10; // 코인 하나를 먹으면 10개 증가
             UpdateCoinUI();
-            Destroy(col.gameObject);
         }
     }
 
