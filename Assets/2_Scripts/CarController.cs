@@ -21,6 +21,10 @@ public class CarController : MonoBehaviour
     public Sprite boostSprite;
     public float boostDuration = 5f;
 
+    [Header("Crash Effect")]
+    public GameObject crashEffectPrefab; // CrashEffect 프리팹 참조
+    private GameObject crashEffectInstance;
+
     private bool isGrounded = true;
     private bool isBoosting = false;
     private Rigidbody2D rb;
@@ -187,10 +191,25 @@ public class CarController : MonoBehaviour
         if (col.collider.CompareTag("Ground"))
             isGrounded = true;
 
-        if (col.collider.CompareTag("Obstacle")) // Obstacle 태그 처리
+        if (col.collider.CompareTag("Obstacle")) // 장애물 충돌 시
         {
+            TriggerCrashEffect(); // CrashEffect 활성화
             SaveFastestTime(); // Fastest Time 저장
             GameManager.Instance?.GameStop(score); // 점수를 전달하여 게임 종료
+        }
+    }
+
+    public void TriggerCrashEffect()
+    {
+        if (crashEffectPrefab != null)
+        {
+            // CrashEffect 생성
+            crashEffectInstance = Instantiate(crashEffectPrefab, transform.position, Quaternion.identity);
+            Destroy(crashEffectInstance, 2f); // 2초 후 효과 제거
+        }
+        else
+        {
+            Debug.LogWarning("CrashEffectPrefab이 설정되지 않았습니다.");
         }
     }
 
@@ -240,16 +259,13 @@ public class CarController : MonoBehaviour
         float currentTime = elapsedTime;
         float fastestTime = PlayerPrefs.GetFloat("FastestTime", float.MaxValue);
 
-        // Fastest Time 업데이트
-        if (currentTime > fastestTime) // 가장 오래 플레이한 시간 저장
+        // Fastest Time 업데이트 (최단 기록 저장)
+        if (currentTime < fastestTime) // 현재 시간이 더 짧을 경우 업데이트
         {
             PlayerPrefs.SetFloat("FastestTime", currentTime);
             PlayerPrefs.Save();
+            Debug.Log($"[CarController] Fastest Time 업데이트: {currentTime}");
         }
-
-        // UI 업데이트
-        UIManager.Instance?.UpdateCurrentTimeText($"Current Time : {FormatElapsedTime(currentTime)}");
-        UIManager.Instance?.UpdateFastTimeText($"Fastest Time : {FormatElapsedTime(PlayerPrefs.GetFloat("FastestTime", float.MaxValue))}");
     }
 
     private string FormatElapsedTime(float time)

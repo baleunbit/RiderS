@@ -49,19 +49,11 @@ public class GameManager : MonoBehaviour
 
         // Fastest Time 업데이트
         float fastestTime = PlayerPrefs.GetFloat("FastestTime", float.MaxValue);
-        if (elapsedTime > fastestTime) // 가장 오래 플레이한 시간 저장
+        if (elapsedTime < fastestTime) // 최단 기록 저장
         {
             PlayerPrefs.SetFloat("FastestTime", elapsedTime);
             PlayerPrefs.Save();
-        }
-
-        // Best Score 업데이트
-        int bestScore = PlayerPrefs.GetInt("BestScore", 0);
-        if (score > bestScore) // 가장 높은 점수 저장
-        {
-            PlayerPrefs.SetInt("BestScore", score);
-            PlayerPrefs.Save();
-            Debug.Log($"[GameManager] Best Score 업데이트: {score}");
+            Debug.Log($"[GameManager] Fastest Time 업데이트: {elapsedTime}");
         }
 
         // UI 업데이트

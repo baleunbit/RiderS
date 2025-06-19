@@ -3,7 +3,7 @@ using UnityEngine;
 public class Coin : MonoBehaviour
 {
     private ParticleSystem coinParticle;
-    private AudioSource audioSource;
+    public AudioSource audioSource;
 
     void Start()
     {
@@ -11,12 +11,22 @@ public class Coin : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
     }
 
-    // 트리거에 들어왔을 때 호출되는 메서드
-    public void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        coinParticle.Play();
-        audioSource.Play();
+        if (collision.CompareTag("Player"))
+        {
+            if (audioSource != null && audioSource.enabled) // AudioSource가 활성화된 경우만 재생
+            {
+                audioSource.Play();
+            }
 
-        Destroy(gameObject, 0.5f);
+            if (coinParticle != null)
+            {
+                coinParticle.Play();
+            }
+
+            // 코인 획득 로직
+            Destroy(gameObject, 0.5f);
+        }
     }
 }

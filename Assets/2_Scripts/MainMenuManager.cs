@@ -24,6 +24,10 @@ public class MainMenuManager : MonoBehaviour
         {
             BestScore.text += $"\nFastest Time : {FormatElapsedTime(fastestTime)}";
         }
+        else
+        {
+            BestScore.text += "\nFastest Time : N/A";
+        }
     }
 
     private string FormatElapsedTime(float time)
